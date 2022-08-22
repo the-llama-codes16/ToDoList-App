@@ -1,0 +1,82 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        DataContext="{Binding Main, Source={StaticResource Locator}}">
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Bottom" 
+                    Background="Black"
+                    Orientation="Vertical">
+            <StackPanel Orientation="Horizontal"
+                        Margin="20,10,20,5">
+                <TextBlock Text="Finished: "
+                           Foreground="White">
+                </TextBlock>
+                <TextBlock Text="{Binding CheckedItems, UpdateSourceTrigger=PropertyChanged}"
+                           Foreground="White">
+                </TextBlock>
+                <TextBlock Text="Unfinished: "
+                           Margin="10,0,0,0"
+                           Foreground="White">
+                </TextBlock>
+                <TextBlock Text="{Binding UncheckedItems, UpdateSourceTrigger=PropertyChanged}"
+                           Foreground="White">
+                </TextBlock>
+            </StackPanel>
+
+            <DockPanel LastChildFill="True" 
+                       Margin="20,5,15,20">
+                <Button DockPanel.Dock="Right" 
+                        Margin="10,0,0,0" 
+                        Style="{StaticResource MaterialDesignIconButton}" 
+                        ToolTip="Add Entry to To Do List" 
+                        Background="Yellow" 
+                        Foreground="Black"
+                        Command="{Binding AddButtonClickCommand}"
+                        IsEnabled="{Binding ElementName=UserInputField, Path=Text.Length, Mode=OneWay}"                        
+                        IsDefault="{Binding ElementName=UserInputField, Path=IsKeyboardFocused}">
+                    <materialDesign:PackIcon Kind="Plus" />
+                </Button>
+                <TextBox Name="UserInputField"
+                         Text="{Binding ToDoEntryInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                         Background="White" 
+                         materialDesign:HintAssist.Hint="Enter To Do Entry here.">
+                </TextBox>
+            </DockPanel>
+        </StackPanel>
+        <ListBox Name="ListOfEntries" 
+                 Background="White"
+                 ItemsSource="{Binding ToDoEntryList}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                        <CheckBox IsChecked="{Binding Checked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Content="{Binding ToDoEntry, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Checked">
+                                <i:InvokeCommandAction Command="{Binding DataContext.CountCheckedItemsCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"/>
+                            </i:EventTrigger>
+
+                            <i:EventTrigger EventName="Unchecked">
+                                <i:InvokeCommandAction Command="{Binding DataContext.CountCheckedItemsCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </CheckBox>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</Window>
